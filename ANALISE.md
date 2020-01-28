@@ -1,9 +1,7 @@
-"An expense tracker (suggested implementation: web or mobile app). Create a simple interface you can use to add and categorize your expenses. Generate monthly reports based on the inputs and write custom alerts for things, like, “spending too much money on coffee… as always.”"
 
- 
-#Requisitos:
+# Requisitos:
 
-##Visual:
+## Visual:
 
 - 4 telas:
 	- Tela inicial:
@@ -21,11 +19,11 @@
 
 - Link do esboço das telas: https://marvelapp.com/4bad91b
 
-##Funcional:
+## Funcional:
 
 - App mobile feito em Flutter;
 - Banco de dados? Serveless? A decidir...
 
-##Estrutural:
+## Estrutural:
 
 - Usuário pode adicionar uma Despesa ou um Lucro, selecionando uma categoria para organizar sua vida financeira.
