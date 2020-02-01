@@ -11,6 +11,11 @@ class App extends StatelessWidget {
         primarySwatch: Colors.grey,
         fontFamily: 'Roboto',
         textTheme: TextTheme(
+          title: TextStyle(
+            fontSize: 56.0,
+            fontWeight: FontWeight.w700,
+            color: Colors.black,
+          ),
           display1: TextStyle(
             fontSize: 23.0,
             fontWeight: FontWeight.w700,
@@ -42,22 +47,24 @@ class DglSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var display1 = Theme.of(context).textTheme.display1;
+    var title = Theme.of(context).textTheme.title;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 26, horizontal: 14),
       child: Row(
         children: [
+          Container(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: Center(
+                child: Text(
+                  "This month",
+                  style: title,
+                ),
+              )),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: Text(
-                    "This month",
-                    style: display1,
-                  ),
-                ),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Text(
