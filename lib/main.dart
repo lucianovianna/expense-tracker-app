@@ -37,7 +37,10 @@ class MyHomePage extends StatelessWidget {
         title: Text("Expense Tracker"),
       ),
       body: ListView(
-        children: [DglSection()],
+        children: [
+          DglSection(),
+          LastInputsSection(),
+        ],
       ),
     );
   }
@@ -52,6 +55,7 @@ class DglSection extends StatelessWidget {
     double expensedMoney = 500.0;
     double gainedMoney = 1000.0;
     double profitedMoney = gainedMoney - expensedMoney;
+    String monetary = "R\$";
 
     return Center(
       child: Column(
@@ -68,9 +72,11 @@ class DglSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildDglColumns(["Expenses", "Gains", "Profit"], display1),
-              _buildDglColumns(
-                  ["\$ $expensedMoney", "\$ $gainedMoney", "\$ $profitedMoney"],
-                  display1),
+              _buildDglColumns([
+                "$monetary $expensedMoney",
+                "$monetary $gainedMoney",
+                "$monetary $profitedMoney"
+              ], display1),
             ],
           ),
         ],
@@ -103,6 +109,24 @@ class DglSection extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class LastInputsSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var title = Theme.of(context).textTheme.title;
+
+    return Center(
+      child: Container(
+        color: Colors.grey[100],
+        padding: const EdgeInsets.symmetric(vertical: 32.0),
+        child: Text(
+          "Last Inputs",
+          style: title,
+        ),
+      ),
     );
   }
 }
