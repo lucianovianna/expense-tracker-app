@@ -119,13 +119,26 @@ class LastInputsSection extends StatelessWidget {
     var title = Theme.of(context).textTheme.title;
 
     return Center(
-      child: Container(
-        color: Colors.grey[100],
-        padding: const EdgeInsets.symmetric(vertical: 32.0),
-        child: Text(
-          "Last Inputs",
-          style: title,
-        ),
+      child: Column(
+        children: <Widget>[
+          Container(
+            color: Colors.grey[100],
+            padding: const EdgeInsets.symmetric(vertical: 32.0),
+            child: Text("Last Inputs", style: title),
+          ),
+          ListView(
+            children: <Widget>[
+              ListTile(
+                title: Text("Expense One"),
+                subtitle: Text("Category"),
+              ),
+              ListTile(
+                title: Text("Gain One"),
+                subtitle: Text("Category"),
+              ),
+            ],
+          )
+        ],
       ),
     );
   }
