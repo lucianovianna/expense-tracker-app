@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(App());
 
@@ -120,6 +121,7 @@ class LastInputsSection extends StatelessWidget {
 
     return Center(
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Container(
             color: Colors.grey[100],
