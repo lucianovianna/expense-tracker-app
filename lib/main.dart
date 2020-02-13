@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:states_rebuilder/states_rebuilder.dart';
 
 void main() => runApp(App());
 
@@ -37,7 +38,9 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Expense Tracker"),
       ),
-      body: ListView(
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           DglSection(),
           LastInputsSection(),
@@ -119,29 +122,28 @@ class LastInputsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     var title = Theme.of(context).textTheme.title;
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Container(
-            color: Colors.grey[100],
-            padding: const EdgeInsets.symmetric(vertical: 32.0),
-            child: Text("Last Inputs", style: title),
-          ),
-          ListView(
-            children: <Widget>[
-              ListTile(
-                title: Text("Expense One"),
-                subtitle: Text("Category"),
-              ),
-              ListTile(
-                title: Text("Gain One"),
-                subtitle: Text("Category"),
-              ),
-            ],
-          )
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Container(
+          padding: const EdgeInsets.only(top: 32.0),
+          child: Text("Last Inputs", style: title),
+        ),
+        ListView(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          children: <Widget>[
+            ListTile(
+              title: Text("Expense One"),
+              subtitle: Text("Category"),
+            ),
+            ListTile(
+              title: Text("Gain One"),
+              subtitle: Text("Category"),
+            ),
+          ],
+        )
+      ],
     );
   }
 }
