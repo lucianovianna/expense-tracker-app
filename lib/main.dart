@@ -89,10 +89,24 @@ class DglSection extends StatelessWidget {
     var display1 = Theme.of(context).textTheme.display1;
     var title = Theme.of(context).textTheme.title;
 
-    double expensedMoney = 500.0;
-    double gainedMoney = 1000.0;
+    final Data dataModel = Injector.get(context: context);
+
+    dataModel.load();
+
+    var entry = dataModel.entries;
+
+    double expensedMoney;
+    double gainedMoney;
+
+    for (dynamic i in entry) {
+      if (entry[i].isExpense) {
+        expensedMoney += entry[i].value;
+      } else {
+        gainedMoney += entry[i].value;
+      }
+    }
+
     double profitedMoney = gainedMoney - expensedMoney;
-    String monetary = "R\$";
 
     return Center(
       child: Column(
@@ -110,9 +124,9 @@ class DglSection extends StatelessWidget {
             children: [
               _buildDglColumns(["Expenses", "Gains", "Profit"], display1),
               _buildDglColumns([
-                "$monetary $expensedMoney",
-                "$monetary $gainedMoney",
-                "$monetary $profitedMoney"
+                "R\$ $expensedMoney",
+                "R\$ $gainedMoney",
+                "R\$ $profitedMoney"
               ], display1),
             ],
           ),
@@ -162,7 +176,6 @@ class LastInputsSection extends StatelessWidget {
 
     return ListView.builder(
       shrinkWrap: true,
-      // scrollDirection: Axis.vertical,
       itemCount: dataModel.entries.length,
       itemBuilder: (BuildContext context, int index) {
         final entry = dataModel.entries[index];
@@ -175,7 +188,6 @@ class LastInputsSection extends StatelessWidget {
           }
 
           return ListTile(
-            // contentPadding: const EdgeInsets.symmetric(horizontal: 6.0),
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               mainAxisSize: MainAxisSize.max,
