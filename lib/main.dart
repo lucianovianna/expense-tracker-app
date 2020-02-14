@@ -13,7 +13,8 @@ class Data extends StatesRebuilder {
   Data() {
     entries = [];
 
-    entries.add(Entry(category: "Job", isExpense: false, value: 500.0));
+    entries.add(Entry(category: "Job", isExpense: false, value: 1000.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
   }
 
   Future load() async {
@@ -70,7 +71,7 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Expense Tracker"),
       ),
-      body: ListView(
+      body: Column(
         // mainAxisSize: MainAxisSize.max,
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -153,13 +154,17 @@ class LastInputsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var display1 = Theme.of(context).textTheme.display1;
+    var title = Theme.of(context).textTheme.title;
 
     final Data dataModel = Injector.get(context: context);
 
+    dataModel.load();
+
     return ListView.builder(
+      shrinkWrap: true,
+      // scrollDirection: Axis.vertical,
       itemCount: dataModel.entries.length,
       itemBuilder: (BuildContext context, int index) {
-        dataModel.load();
         final entry = dataModel.entries[index];
 
         dynamic isExpense() {
@@ -170,27 +175,44 @@ class LastInputsSection extends StatelessWidget {
           }
 
           return ListTile(
+            // contentPadding: const EdgeInsets.symmetric(horizontal: 6.0),
             title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
               children: <Text>[
                 Text(
                   "$entryType $index",
                   style: display1,
-                  textAlign: TextAlign.right,
+                  textAlign: TextAlign.left,
                 ),
                 Text(
-                  "R\$ $entry.value",
+                  "R\$ ${entry.value}",
                   style: display1,
-                  textAlign: TextAlign.left,
+                  textAlign: TextAlign.right,
                 ),
               ],
             ),
-            subtitle: Text("$entry.category", style: display1),
+            subtitle: Text(
+              entry.category,
+              style: display1,
+              textAlign: TextAlign.start,
+            ),
+            // key: Key(dataModel.entries.indexOf(entry).toString()),
           );
         }
 
-        return Container(
-          child: isExpense(),
+        // return isExpense();
+        return Column(
+          children: <Widget>[
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text("Last Inputs", style: title),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: isExpense(),
+            ),
+          ],
           key: Key(dataModel.entries.indexOf(entry).toString()),
         );
       },
