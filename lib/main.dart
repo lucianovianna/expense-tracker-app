@@ -15,6 +15,15 @@ class Data extends StatesRebuilder {
 
     entries.add(Entry(category: "Job", isExpense: false, value: 1000.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Job", isExpense: false, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+
+    print("\nDEBUG: ${entries.length}\n");
   }
 
   Future load() async {
@@ -76,7 +85,7 @@ class MyHomePage extends StatelessWidget {
         // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           DglSection(),
-          LastInputsSection(),
+          Expanded(child: LastInputsSection()),
         ],
       ),
     );
@@ -184,51 +193,55 @@ class LastInputsSection extends StatelessWidget {
           style: title,
         ),
       ),
-      ListView.builder(
-        shrinkWrap: true,
-        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-        itemCount: dataModel.entries.length,
-        itemBuilder: (BuildContext context, int index) {
-          final entry = dataModel.entries[index];
+      Container(
+        height: 130.0,
+        child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          padding: const EdgeInsets.symmetric(horizontal: 6.0),
+          itemCount: dataModel.entries.length,
+          itemBuilder: (BuildContext context, int index) {
+            final entry = dataModel.entries[index];
 
-          dynamic isExpense() {
-            String entryType = "Gain";
+            dynamic isExpense() {
+              String entryType = "Gain";
 
-            if (entry.isExpense) {
-              entryType = "Expense";
+              if (entry.isExpense) {
+                entryType = "Expense";
+              }
+
+              return ListTile(
+                title: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Text>[
+                    Text(
+                      "$entryType $index",
+                      style: subhead,
+                      textAlign: TextAlign.left,
+                    ),
+                    Text(
+                      "R\$ ${entry.value}",
+                      style: subhead,
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+                subtitle: Text(
+                  entry.category,
+                  style: subtitle,
+                  textAlign: TextAlign.start,
+                ),
+                // key: Key(dataModel.entries.indexOf(entry).toString()),
+              );
             }
 
-            return ListTile(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Text>[
-                  Text(
-                    "$entryType $index",
-                    style: subhead,
-                    textAlign: TextAlign.left,
-                  ),
-                  Text(
-                    "R\$ ${entry.value}",
-                    style: subhead,
-                    textAlign: TextAlign.right,
-                  ),
-                ],
-              ),
-              subtitle: Text(
-                entry.category,
-                style: subtitle,
-                textAlign: TextAlign.start,
-              ),
-              // key: Key(dataModel.entries.indexOf(entry).toString()),
+            return Container(
+              height: 65.0,
+              color: Colors.grey[100],
+              child: isExpense(),
+              key: Key(dataModel.entries.indexOf(entry).toString()),
             );
-          }
-
-          return Container(
-            decoration: BoxDecoration(),
-            child: isExpense(),
-            key: Key(dataModel.entries.indexOf(entry).toString()),
-          );
-        },
+          },
+        ),
       ),
     ]);
   }
