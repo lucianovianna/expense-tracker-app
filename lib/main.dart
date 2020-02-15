@@ -93,18 +93,19 @@ class DglSection extends StatelessWidget {
 
     dataModel.load();
 
-    var entry = dataModel.entries;
+    // final entry = dataModel.entries;
 
-    double expensedMoney;
-    double gainedMoney;
+    double expensedMoney = 0;
+    double gainedMoney = 0;
 
-    for (dynamic i in entry) {
-      if (entry[i].isExpense) {
-        expensedMoney += entry[i].value;
-      } else {
-        gainedMoney += entry[i].value;
-      }
-    }
+    // for (var i = 0; i < entry.length; i++) {
+    //   print("\nDEBUG: ${entry.length}\n");
+    //   if (entry[i].isExpense) {
+    //     expensedMoney += entry[i].value;
+    //   } else {
+    //     gainedMoney += entry[i].value;
+    //   }
+    // } // getting error...
 
     double profitedMoney = gainedMoney - expensedMoney;
 
@@ -113,7 +114,7 @@ class DglSection extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 26.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Text(
               "This month",
               style: title,
@@ -139,21 +140,21 @@ class DglSection extends StatelessWidget {
     return Column(
       children: <Widget>[
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Text(
             label[0],
             style: display1,
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Text(
             label[1],
             style: display1,
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 6.0),
           child: Text(
             label[2],
             style: display1,
@@ -167,67 +168,68 @@ class DglSection extends StatelessWidget {
 class LastInputsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var display1 = Theme.of(context).textTheme.display1;
+    var subtitle = Theme.of(context).textTheme.subtitle;
     var title = Theme.of(context).textTheme.title;
+    var subhead = Theme.of(context).textTheme.subhead;
 
     final Data dataModel = Injector.get(context: context);
 
     dataModel.load();
 
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: dataModel.entries.length,
-      itemBuilder: (BuildContext context, int index) {
-        final entry = dataModel.entries[index];
+    return Column(children: [
+      Container(
+        padding: const EdgeInsets.symmetric(vertical: 12.0),
+        child: Text(
+          "Last Inputs",
+          style: title,
+        ),
+      ),
+      ListView.builder(
+        shrinkWrap: true,
+        padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        itemCount: dataModel.entries.length,
+        itemBuilder: (BuildContext context, int index) {
+          final entry = dataModel.entries[index];
 
-        dynamic isExpense() {
-          String entryType = "Gain";
+          dynamic isExpense() {
+            String entryType = "Gain";
 
-          if (entry.isExpense) {
-            entryType = "Expense";
+            if (entry.isExpense) {
+              entryType = "Expense";
+            }
+
+            return ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Text>[
+                  Text(
+                    "$entryType $index",
+                    style: subhead,
+                    textAlign: TextAlign.left,
+                  ),
+                  Text(
+                    "R\$ ${entry.value}",
+                    style: subhead,
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
+              subtitle: Text(
+                entry.category,
+                style: subtitle,
+                textAlign: TextAlign.start,
+              ),
+              // key: Key(dataModel.entries.indexOf(entry).toString()),
+            );
           }
 
-          return ListTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              mainAxisSize: MainAxisSize.max,
-              children: <Text>[
-                Text(
-                  "$entryType $index",
-                  style: display1,
-                  textAlign: TextAlign.left,
-                ),
-                Text(
-                  "R\$ ${entry.value}",
-                  style: display1,
-                  textAlign: TextAlign.right,
-                ),
-              ],
-            ),
-            subtitle: Text(
-              entry.category,
-              style: display1,
-              textAlign: TextAlign.start,
-            ),
-            // key: Key(dataModel.entries.indexOf(entry).toString()),
+          return Container(
+            decoration: BoxDecoration(),
+            child: isExpense(),
+            key: Key(dataModel.entries.indexOf(entry).toString()),
           );
-        }
-
-        // return isExpense();
-        return Column(
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 12.0),
-              child: Text("Last Inputs", style: title),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: isExpense(),
-            ),
-          ],
-          key: Key(dataModel.entries.indexOf(entry).toString()),
-        );
-      },
-    );
+        },
+      ),
+    ]);
   }
 }
