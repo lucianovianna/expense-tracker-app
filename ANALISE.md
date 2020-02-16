@@ -22,7 +22,7 @@
 ## Funcional:
 
 - App mobile feito em Flutter;
-- Banco de dados? Serveless? Firebase? A decidir...
+- Dados salvos localmente com o package Shared_Preferences.
 
 ## Estrutural:
 
