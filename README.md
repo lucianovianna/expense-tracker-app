@@ -8,6 +8,6 @@ Projeto com fins educativos.
 
 ## Progresso
 
-<img src="https://github.com/lucianovianna/expense-tracker-app/blob/master/assets/progress.png" width="300px" />
-<figcaption>15/02/2019</figcaption>
+<img src="https://github.com/lucianovianna/expense-tracker-app/blob/master/assets/progress.gif" width="300px" />
+<figcaption>16/02/2019</figcaption>
 
