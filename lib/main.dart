@@ -24,7 +24,7 @@ class Data extends StatesRebuilder {
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     // Dummy entries
 
-    print("\nDEBUG: ${entries.length}\n");
+    // print("\nDEBUG: ${entries.length}\n");
   }
 
   Future load() async {
@@ -40,14 +40,6 @@ class Data extends StatesRebuilder {
       rebuildStates();
     }
   }
-}
-
-class PersonalStyles {
-  dglTextStyle() => TextStyle(
-        fontSize: 23.0,
-        fontWeight: FontWeight.w500,
-        color: Colors.black87,
-      );
 }
 
 class App extends StatelessWidget {
@@ -92,7 +84,8 @@ class MyHomePage extends StatelessWidget {
 class DglSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var display1 = Theme.of(context).textTheme.body2;
+    var display1 =
+        Theme.of(context).textTheme.body2.copyWith(color: Colors.black87);
     var title =
         Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w700);
 
@@ -100,7 +93,9 @@ class DglSection extends StatelessWidget {
 
     dataModel.load();
 
-    // final entry = dataModel.entries;
+    final entry = dataModel.entries;
+
+    print("-- DEBUG --\n{$entry}\n-- DEBUG --");
 
     double expensedMoney = 0;
     double gainedMoney = 0;
