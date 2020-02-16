@@ -15,13 +15,14 @@ class Data extends StatesRebuilder {
 
     entries.add(Entry(category: "Job", isExpense: false, value: 1000.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Job", isExpense: false, value: 500.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    // entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    // Dummy entries
 
     print("\nDEBUG: ${entries.length}\n");
   }
@@ -41,6 +42,14 @@ class Data extends StatesRebuilder {
   }
 }
 
+class PersonalStyles {
+  dglTextStyle() => TextStyle(
+        fontSize: 23.0,
+        fontWeight: FontWeight.w500,
+        color: Colors.black87,
+      );
+}
+
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -49,18 +58,6 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
         fontFamily: 'Roboto',
-        textTheme: TextTheme(
-          title: TextStyle(
-            fontSize: 36.0,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-          display1: TextStyle(
-            fontSize: 23.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
-          ),
-        ),
       ),
       debugShowCheckedModeBanner: false,
       home: Injector(
@@ -95,8 +92,9 @@ class MyHomePage extends StatelessWidget {
 class DglSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var display1 = Theme.of(context).textTheme.display1;
-    var title = Theme.of(context).textTheme.title;
+    var display1 = Theme.of(context).textTheme.body2;
+    var title =
+        Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w700);
 
     final Data dataModel = Injector.get(context: context);
 
@@ -177,8 +175,10 @@ class DglSection extends StatelessWidget {
 class LastInputsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var title =
+        Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w700);
+
     var subtitle = Theme.of(context).textTheme.subtitle;
-    var title = Theme.of(context).textTheme.title;
     var subhead = Theme.of(context).textTheme.subhead;
 
     final Data dataModel = Injector.get(context: context);
@@ -194,7 +194,7 @@ class LastInputsSection extends StatelessWidget {
         ),
       ),
       Container(
-        height: 130.0,
+        height: 195.0,
         child: ListView.builder(
           scrollDirection: Axis.vertical,
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -204,9 +204,11 @@ class LastInputsSection extends StatelessWidget {
 
             dynamic isExpense() {
               String entryType = "Gain";
+              var entryTextColor = Colors.green;
 
               if (entry.isExpense) {
                 entryType = "Expense";
+                entryTextColor = Colors.red;
               }
 
               return ListTile(
@@ -215,19 +217,19 @@ class LastInputsSection extends StatelessWidget {
                   children: <Text>[
                     Text(
                       "$entryType $index",
-                      style: subhead,
+                      style: subhead.copyWith(color: entryTextColor),
                       textAlign: TextAlign.left,
                     ),
                     Text(
                       "R\$ ${entry.value}",
-                      style: subhead,
+                      style: subhead.copyWith(color: entryTextColor),
                       textAlign: TextAlign.right,
                     ),
                   ],
                 ),
                 subtitle: Text(
                   entry.category,
-                  style: subtitle,
+                  style: subtitle.copyWith(color: Colors.black54),
                   textAlign: TextAlign.start,
                 ),
                 // key: Key(dataModel.entries.indexOf(entry).toString()),
