@@ -53,14 +53,14 @@ class App extends StatelessWidget {
       home: Injector(
         inject: [Inject(() => Data())],
         builder: (BuildContext context) {
-          return MyHomePage();
+          return HomePage();
         },
       ),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +74,15 @@ class MyHomePage extends StatelessWidget {
           DglSection(),
           Expanded(child: LastInputsSection()),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add_circle),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NewEntryScreen()),
+          );
+        },
       ),
     );
   }
@@ -235,5 +244,38 @@ class LastInputsSection extends StatelessWidget {
         ),
       ),
     ]);
+  }
+}
+
+class NewEntryScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("New Entry"),
+      ),
+      body: Column(
+        children: [
+          Container(
+            alignment: Alignment.topCenter,
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Column(
+              children: [
+                RaisedButton(
+                  padding: const EdgeInsets.all(6.0),
+                  onPressed: null,
+                  child: Text("Expense"),
+                ),
+                RaisedButton(
+                  padding: const EdgeInsets.all(6.0),
+                  onPressed: null,
+                  child: Text("Expense"),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
