@@ -13,18 +13,16 @@ class Data extends StatesRebuilder {
   Data() {
     entries = [];
 
-    entries.add(Entry(category: "Job", isExpense: false, value: 1000.0));
+    entries.add(Entry(category: "Job", isExpense: false, value: 1000.95));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.50));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.44));
+    entries.add(Entry(category: "Job", isExpense: false, value: 500.65));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Job", isExpense: false, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 500.11));
     // Dummy entries
-
-    // print("\nDEBUG: ${entries.length}\n");
   }
 
   Future load() async {
@@ -93,21 +91,18 @@ class DglSection extends StatelessWidget {
 
     dataModel.load();
 
-    final entry = dataModel.entries;
-
-    print("-- DEBUG --\n{$entry}\n-- DEBUG --");
+    final entries = dataModel.entries.toList();
 
     double expensedMoney = 0;
     double gainedMoney = 0;
 
-    // for (var i = 0; i < entry.length; i++) {
-    //   print("\nDEBUG: ${entry.length}\n");
-    //   if (entry[i].isExpense) {
-    //     expensedMoney += entry[i].value;
-    //   } else {
-    //     gainedMoney += entry[i].value;
-    //   }
-    // } // getting error...
+    for (var i = 0; i < entries.length; i++) {
+      if (entries[i].isExpense) {
+        expensedMoney += entries[i].value;
+      } else {
+        gainedMoney += entries[i].value;
+      }
+    }
 
     double profitedMoney = gainedMoney - expensedMoney;
 
@@ -118,7 +113,7 @@ class DglSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: Text(
-              "This month",
+              "Your balance",
               style: title,
             ),
           ),
@@ -127,9 +122,9 @@ class DglSection extends StatelessWidget {
             children: [
               _buildDglColumns(["Expenses", "Gains", "Profit"], display1),
               _buildDglColumns([
-                "R\$ $expensedMoney",
-                "R\$ $gainedMoney",
-                "R\$ $profitedMoney"
+                "R\$ ${expensedMoney.toStringAsFixed(2)}",
+                "R\$ ${gainedMoney.toStringAsFixed(2)}",
+                "R\$ ${profitedMoney.toStringAsFixed(2)}"
               ], display1),
             ],
           ),
@@ -216,7 +211,7 @@ class LastInputsSection extends StatelessWidget {
                       textAlign: TextAlign.left,
                     ),
                     Text(
-                      "R\$ ${entry.value}",
+                      "R\$ ${entry.value.toStringAsFixed(2)}",
                       style: subhead.copyWith(color: entryTextColor),
                       textAlign: TextAlign.right,
                     ),
@@ -227,7 +222,6 @@ class LastInputsSection extends StatelessWidget {
                   style: subtitle.copyWith(color: Colors.black54),
                   textAlign: TextAlign.start,
                 ),
-                // key: Key(dataModel.entries.indexOf(entry).toString()),
               );
             }
 
