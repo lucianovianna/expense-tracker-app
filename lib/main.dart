@@ -26,8 +26,8 @@ class Data extends StatesRebuilder {
   }
 
   Future load() async {
-    var prefs = await SharedPreferences.getInstance();
-    var data = prefs.getString('data');
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString('data');
 
     if (data != null) {
       Iterable decoded = jsonDecode(data);
@@ -76,7 +76,7 @@ class HomePage extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add_circle),
+        child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,
@@ -248,33 +248,81 @@ class LastInputsSection extends StatelessWidget {
 }
 
 class NewEntryScreen extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("New Entry"),
       ),
-      body: Column(
-        children: [
-          Container(
-            alignment: Alignment.topCenter,
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Column(
-              children: [
-                RaisedButton(
-                  padding: const EdgeInsets.all(6.0),
-                  onPressed: null,
-                  child: Text("Expense"),
+      body: Builder(
+        builder: (BuildContext context) {
+          return Column(
+            children: [
+              Container(
+                alignment: Alignment.topCenter,
+                padding: const EdgeInsets.symmetric(vertical: 14.0),
+                child: Column(
+                  children: [
+                    RaisedButton(
+                      padding: const EdgeInsets.all(6.0),
+                      onPressed: null,
+                      child: Text("Expense"),
+                    ),
+                    RaisedButton(
+                      padding: const EdgeInsets.all(6.0),
+                      onPressed: null,
+                      child: Text("Gain"),
+                    ),
+                  ],
                 ),
-                RaisedButton(
-                  padding: const EdgeInsets.all(6.0),
-                  onPressed: null,
-                  child: Text("Expense"),
+              ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: DropdownButtonFormField(
+                        items: null,
+                        onChanged: null,
+                      ),
+                    ),
+                    TextFormField(
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 20,
+                      ),
+                      decoration: InputDecoration(
+                        prefixText: "R\$ \t",
+                      ),
+                      initialValue: "0.00",
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return 'Please enter the value';
+                        }
+                        return null;
+                      },
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                            content: Text('Test'),
+                          ));
+                        }
+                      },
+                      child: Text('Submit'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          )
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
