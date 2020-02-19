@@ -247,8 +247,20 @@ class LastInputsSection extends StatelessWidget {
   }
 }
 
-class NewEntryScreen extends StatelessWidget {
+class NewEntryScreen extends StatefulWidget {
+  @override
+  _NewEntryScreenState createState() => _NewEntryScreenState();
+}
+
+class _NewEntryScreenState extends State<NewEntryScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  String dropDownValue = "Job";
+  void dropDownChange(String val) {
+    setState(() {
+      dropDownValue = val;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -258,64 +270,84 @@ class NewEntryScreen extends StatelessWidget {
       ),
       body: Builder(
         builder: (BuildContext context) {
-          return Column(
+          return ListView(
             children: [
-              Container(
-                alignment: Alignment.topCenter,
-                padding: const EdgeInsets.symmetric(vertical: 14.0),
-                child: Column(
-                  children: [
-                    RaisedButton(
-                      padding: const EdgeInsets.all(6.0),
-                      onPressed: null,
-                      child: Text("Expense"),
-                    ),
-                    RaisedButton(
-                      padding: const EdgeInsets.all(6.0),
-                      onPressed: null,
-                      child: Text("Gain"),
-                    ),
-                  ],
-                ),
-              ),
               Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: DropdownButtonFormField(
-                        items: null,
-                        onChanged: null,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6.0,
+                        vertical: 20.0,
+                      ),
+                      child: TextFormField(
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontSize: 20.0,
+                        ),
+                        decoration: InputDecoration(
+                          prefixText: "R\$ \t",
+                        ),
+                        initialValue: "0.00",
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value.isEmpty) {
+                            return 'Please enter the value';
+                          } else if (double.parse(value) == 0) {
+                            return 'Value must be greater than zero';
+                          }
+                          return null;
+                        },
                       ),
                     ),
-                    TextFormField(
-                      style: TextStyle(
-                        color: Colors.black87,
-                        fontSize: 20,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6.0,
+                        vertical: 20.0,
                       ),
-                      decoration: InputDecoration(
-                        prefixText: "R\$ \t",
+                      child: DropdownButtonFormField(
+                        decoration: InputDecoration(
+                          labelText: "Select a category",
+                          isDense: true,
+                        ),
+                        items: <String>["Job", "Tax"]
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            child: Text(value),
+                            value: value,
+                          );
+                        }).toList(),
+                        onChanged: dropDownChange,
+                        value: dropDownValue,
                       ),
-                      initialValue: "0.00",
-                      keyboardType: TextInputType.number,
-                      validator: (value) {
-                        if (value.isEmpty) {
-                          return 'Please enter the value';
-                        }
-                        return null;
-                      },
                     ),
                     RaisedButton(
+                      child: Text('Submit'),
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Test'),
+                            content: Text('Submited'),
                           ));
                         }
                       },
-                      child: Text('Submit'),
+                    ),
+                    Center(
+                      child: Column(
+                        children: [
+                          RaisedButton(
+                            padding: const EdgeInsets.all(6.0),
+                            onPressed: null,
+                            child: Text("New Expense"),
+                          ),
+                          RaisedButton(
+                            padding: const EdgeInsets.all(6.0),
+                            onPressed: null,
+                            child: Text("New Gain"),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
