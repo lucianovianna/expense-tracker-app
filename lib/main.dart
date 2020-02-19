@@ -38,6 +38,11 @@ class Data extends StatesRebuilder {
       rebuildStates();
     }
   }
+
+  save() async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString('data', jsonEncode(entries));
+  }
 }
 
 class App extends StatelessWidget {
@@ -80,7 +85,14 @@ class HomePage extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NewEntryScreen()),
+            MaterialPageRoute(
+              builder: (context) => Injector(
+                inject: [Inject(() => Data())],
+                builder: (context) {
+                  return NewEntryScreen();
+                },
+              ),
+            ),
           );
         },
       ),
@@ -195,7 +207,7 @@ class LastInputsSection extends StatelessWidget {
       Container(
         height: 195.0,
         child: ListView.builder(
-          scrollDirection: Axis.vertical,
+          reverse: true,
           padding: const EdgeInsets.symmetric(horizontal: 6.0),
           itemCount: dataModel.entries.length,
           itemBuilder: (BuildContext context, int index) {
@@ -262,8 +274,46 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
     });
   }
 
+  var entryValueCrtl = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final Data dataModel = Injector.get(context: context);
+
+    final entries = dataModel.entries;
+
+    void addNewExpense() {
+      entries.add(
+        Entry(
+          isExpense: true,
+          category: dropDownValue,
+          value: double.parse(entryValueCrtl.text),
+        ),
+      );
+
+      entryValueCrtl.text = "0.00";
+
+      dataModel.save();
+
+      Navigator.pop(context);
+    }
+
+    void addNewGain() {
+      entries.add(
+        Entry(
+          isExpense: false,
+          category: dropDownValue,
+          value: double.parse(entryValueCrtl.text),
+        ),
+      );
+
+      entryValueCrtl.text = "0.00";
+
+      dataModel.save();
+
+      Navigator.pop(context);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("New Entry"),
@@ -283,6 +333,7 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                         vertical: 20.0,
                       ),
                       child: TextFormField(
+                        controller: entryValueCrtl,
                         style: TextStyle(
                           color: Colors.black87,
                           fontSize: 20.0,
@@ -290,7 +341,6 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                         decoration: InputDecoration(
                           prefixText: "R\$ \t",
                         ),
-                        initialValue: "0.00",
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value.isEmpty) {
@@ -338,12 +388,12 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                         children: [
                           RaisedButton(
                             padding: const EdgeInsets.all(6.0),
-                            onPressed: null,
+                            onPressed: addNewExpense,
                             child: Text("New Expense"),
                           ),
                           RaisedButton(
                             padding: const EdgeInsets.all(6.0),
-                            onPressed: null,
+                            onPressed: addNewGain,
                             child: Text("New Gain"),
                           ),
                         ],
