@@ -42,6 +42,8 @@ class Data extends StatesRebuilder {
   save() async {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('data', jsonEncode(entries));
+
+    rebuildStates();
   }
 }
 
@@ -68,13 +70,14 @@ class App extends StatelessWidget {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // final Data dataModel = Injector.get<Data>();
+    final Data dataModel = Injector.get(context: context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Expense Tracker"),
       ),
       body: Column(
-        // mainAxisSize: MainAxisSize.max,
-        // crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           DglSection(),
           Expanded(child: LastInputsSection()),
@@ -87,7 +90,7 @@ class HomePage extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (context) => Injector(
-                inject: [Inject(() => Data())],
+                reinject: [dataModel],
                 builder: (context) {
                   return NewEntryScreen();
                 },
@@ -196,6 +199,63 @@ class LastInputsSection extends StatelessWidget {
 
     dataModel.load();
 
+    final scrollController = ScrollController();
+    scrollController.jumpTo(scrollController.position.minScrollExtent);
+    // scrollController.animateTo(
+    //   scrollController.position.maxScrollExtent,
+    //   duration: const Duration(milliseconds: 500),
+    //   curve: Curves.easeOut,
+    // );
+    ListView lastInputsList = ListView.builder(
+      reverse: true,
+      padding: const EdgeInsets.symmetric(horizontal: 6.0),
+      itemCount: dataModel.entries.length,
+      controller: scrollController,
+      itemBuilder: (BuildContext context, int index) {
+        final entry = dataModel.entries[index];
+
+        dynamic isExpense() {
+          String entryType = "Gain";
+          var entryTextColor = Colors.green;
+
+          if (entry.isExpense) {
+            entryType = "Expense";
+            entryTextColor = Colors.red;
+          }
+
+          return ListTile(
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Text>[
+                Text(
+                  "$entryType $index",
+                  style: subhead.copyWith(color: entryTextColor),
+                  textAlign: TextAlign.left,
+                ),
+                Text(
+                  "R\$ ${entry.value.toStringAsFixed(2)}",
+                  style: subhead.copyWith(color: entryTextColor),
+                  textAlign: TextAlign.right,
+                ),
+              ],
+            ),
+            subtitle: Text(
+              entry.category,
+              style: subtitle.copyWith(color: Colors.black54),
+              textAlign: TextAlign.start,
+            ),
+          );
+        }
+
+        return Container(
+          height: 65.0,
+          color: Colors.grey[100],
+          child: isExpense(),
+          key: Key(dataModel.entries.indexOf(entry).toString()),
+        );
+      },
+    );
+
     return Column(children: [
       Container(
         padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -206,54 +266,56 @@ class LastInputsSection extends StatelessWidget {
       ),
       Container(
         height: 195.0,
-        child: ListView.builder(
-          reverse: true,
-          padding: const EdgeInsets.symmetric(horizontal: 6.0),
-          itemCount: dataModel.entries.length,
-          itemBuilder: (BuildContext context, int index) {
-            final entry = dataModel.entries[index];
+        child: lastInputsList,
+        // child: ListView.builder(
+        //   reverse: true,
+        //   padding: const EdgeInsets.symmetric(horizontal: 6.0),
+        //   itemCount: dataModel.entries.length,
+        //   // controller: scrollController,
+        //   itemBuilder: (BuildContext context, int index) {
+        //     final entry = dataModel.entries[index];
 
-            dynamic isExpense() {
-              String entryType = "Gain";
-              var entryTextColor = Colors.green;
+        //     dynamic isExpense() {
+        //       String entryType = "Gain";
+        //       var entryTextColor = Colors.green;
 
-              if (entry.isExpense) {
-                entryType = "Expense";
-                entryTextColor = Colors.red;
-              }
+        //       if (entry.isExpense) {
+        //         entryType = "Expense";
+        //         entryTextColor = Colors.red;
+        //       }
 
-              return ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Text>[
-                    Text(
-                      "$entryType $index",
-                      style: subhead.copyWith(color: entryTextColor),
-                      textAlign: TextAlign.left,
-                    ),
-                    Text(
-                      "R\$ ${entry.value.toStringAsFixed(2)}",
-                      style: subhead.copyWith(color: entryTextColor),
-                      textAlign: TextAlign.right,
-                    ),
-                  ],
-                ),
-                subtitle: Text(
-                  entry.category,
-                  style: subtitle.copyWith(color: Colors.black54),
-                  textAlign: TextAlign.start,
-                ),
-              );
-            }
+        //       return ListTile(
+        //         title: Row(
+        //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //           children: <Text>[
+        //             Text(
+        //               "$entryType $index",
+        //               style: subhead.copyWith(color: entryTextColor),
+        //               textAlign: TextAlign.left,
+        //             ),
+        //             Text(
+        //               "R\$ ${entry.value.toStringAsFixed(2)}",
+        //               style: subhead.copyWith(color: entryTextColor),
+        //               textAlign: TextAlign.right,
+        //             ),
+        //           ],
+        //         ),
+        //         subtitle: Text(
+        //           entry.category,
+        //           style: subtitle.copyWith(color: Colors.black54),
+        //           textAlign: TextAlign.start,
+        //         ),
+        //       );
+        //     }
 
-            return Container(
-              height: 65.0,
-              color: Colors.grey[100],
-              child: isExpense(),
-              key: Key(dataModel.entries.indexOf(entry).toString()),
-            );
-          },
-        ),
+        //     return Container(
+        //       height: 65.0,
+        //       color: Colors.grey[100],
+        //       child: isExpense(),
+        //       key: Key(dataModel.entries.indexOf(entry).toString()),
+        //     );
+        //   },
+        // ),
       ),
     ]);
   }
@@ -276,9 +338,14 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
 
   var entryValueCrtl = TextEditingController();
 
+  _NewEntryScreenState() {
+    entryValueCrtl.text = "0.00";
+  }
+
   @override
   Widget build(BuildContext context) {
     final Data dataModel = Injector.get(context: context);
+    // final Data dataModel = Injector.get<Data>();
 
     final entries = dataModel.entries;
 
