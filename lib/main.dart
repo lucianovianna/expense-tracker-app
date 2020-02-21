@@ -19,14 +19,12 @@ class Data extends StatesRebuilder {
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.44));
     entries.add(Entry(category: "Job", isExpense: false, value: 500.65));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.11));
+    entries.add(Entry(category: "Tax", isExpense: true, value: 21.34));
     // Dummy entries
   }
 
   Future load() async {
-    final prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
     final data = prefs.getString('data');
 
     if (data != null) {
@@ -43,6 +41,7 @@ class Data extends StatesRebuilder {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('data', jsonEncode(entries));
 
+    // load();
     rebuildStates();
   }
 }
@@ -53,6 +52,7 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Expense Tracker',
       theme: ThemeData(
+        primaryColor: Colors.grey[350],
         primarySwatch: Colors.grey,
         fontFamily: 'Roboto',
       ),
@@ -85,6 +85,7 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
+        foregroundColor: Colors.white,
         onPressed: () {
           Navigator.push(
             context,
@@ -280,8 +281,9 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
     });
   }
 
-  var entryValueCrtl = TextEditingController();
+  final entryValueCrtl = TextEditingController();
 
+  // Init State
   _NewEntryScreenState() {
     entryValueCrtl.text = "0.00";
   }
@@ -293,26 +295,10 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
 
     final entries = dataModel.entries;
 
-    void addNewExpense() {
+    void addNewEntry(bool entryType) {
       entries.add(
         Entry(
-          isExpense: true,
-          category: dropDownValue,
-          value: double.parse(entryValueCrtl.text),
-        ),
-      );
-
-      entryValueCrtl.text = "0.00";
-
-      dataModel.save();
-
-      Navigator.pop(context);
-    }
-
-    void addNewGain() {
-      entries.add(
-        Entry(
-          isExpense: false,
+          isExpense: entryType,
           category: dropDownValue,
           value: double.parse(entryValueCrtl.text),
         ),
@@ -329,93 +315,107 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
       appBar: AppBar(
         title: Text("New Entry"),
       ),
-      body: Builder(
-        builder: (BuildContext context) {
-          return ListView(
-            children: [
-              Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6.0,
-                        vertical: 20.0,
-                      ),
-                      child: TextFormField(
-                        controller: entryValueCrtl,
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 20.0,
-                        ),
-                        decoration: InputDecoration(
-                          prefixText: "R\$ \t",
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter the value';
-                          } else if (double.parse(value) == 0) {
-                            return 'Value must be greater than zero';
-                          }
-                          return null;
-                        },
-                      ),
+      body: ListView(
+        children: [
+          Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // Value Input Form
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6.0,
+                    vertical: 30.0,
+                  ),
+                  child: TextFormField(
+                    controller: entryValueCrtl,
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 20.0,
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6.0,
-                        vertical: 20.0,
-                      ),
-                      child: DropdownButtonFormField(
-                        decoration: InputDecoration(
-                          labelText: "Select a category",
-                          isDense: true,
-                        ),
-                        items: <String>["Job", "Tax"]
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            child: Text(value),
-                            value: value,
-                          );
-                        }).toList(),
-                        onChanged: dropDownChange,
-                        value: dropDownValue,
-                      ),
+                    decoration: InputDecoration(
+                      prefixText: "R\$ \t",
                     ),
-                    RaisedButton(
-                      child: Text('Submit'),
-                      onPressed: () {
-                        if (_formKey.currentState.validate()) {
-                          Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text('Submited'),
-                          ));
-                        }
-                      },
-                    ),
-                    Center(
-                      child: Column(
-                        children: [
-                          RaisedButton(
-                            padding: const EdgeInsets.all(6.0),
-                            onPressed: addNewExpense,
-                            child: Text("New Expense"),
-                          ),
-                          RaisedButton(
-                            padding: const EdgeInsets.all(6.0),
-                            onPressed: addNewGain,
-                            child: Text("New Gain"),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return 'Please enter the value';
+                      } else if (double.parse(value) <= 0) {
+                        return 'Value must be positive';
+                      }
+                      return null;
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+                // Category Selection Form
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6.0,
+                    vertical: 30.0,
+                  ),
+                  child: DropdownButtonFormField(
+                    decoration: InputDecoration(
+                      labelText: "Select a category",
+                      isDense: true,
+                    ),
+                    items: <String>[
+                      "Job",
+                      "Gift",
+                      "Payments",
+                      "Tax",
+                      "Food",
+                      "Education",
+                      "Transport",
+                      "Other",
+                    ].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        child: Text(value),
+                        value: value,
+                      );
+                    }).toList(),
+                    onChanged: dropDownChange,
+                    value: dropDownValue,
+                  ),
+                ),
+                // Add Entry Buttons
+                Center(
+                  child: Column(
+                    children: [
+                      // New Expense
+                      RaisedButton(
+                        padding: const EdgeInsets.all(6.0),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            addNewEntry(true);
+                          }
+                        },
+                        child: Text("New Expense"),
+                        color: Colors.red,
+                        textColor: Colors.white,
+                      ),
+                      // New Gain
+                      RaisedButton(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6.0,
+                          horizontal: 18.3,
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState.validate()) {
+                            addNewEntry(false);
+                          }
+                        },
+                        child: Text("New Gain"),
+                        color: Colors.green,
+                        textColor: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
