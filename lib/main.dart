@@ -14,13 +14,14 @@ class Data extends StatesRebuilder {
     entries = [];
 
     entries.add(Entry(category: "Job", isExpense: false, value: 1000.95));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.50));
+    entries.add(Entry(category: "Education", isExpense: true, value: 300.00));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
+    entries.add(Entry(category: "Food", isExpense: true, value: 41.50));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.44));
     entries.add(Entry(category: "Job", isExpense: false, value: 500.65));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 21.34));
     // Dummy entries
+
+    load();
   }
 
   Future load() async {
@@ -304,9 +305,9 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
         ),
       );
 
-      entryValueCrtl.text = "0.00";
-
       dataModel.save();
+
+      entryValueCrtl.text = "0.00";
 
       Navigator.pop(context);
     }
