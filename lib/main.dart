@@ -31,7 +31,6 @@ class Data extends StatesRebuilder {
 
       entries = result;
 
-      // if (hasObservers)
       rebuildStates();
     }
   }
@@ -40,7 +39,6 @@ class Data extends StatesRebuilder {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('data', jsonEncode(entries));
 
-    // if (hasObservers)
     rebuildStates();
   }
 }
@@ -76,7 +74,7 @@ class HomePage extends StatelessWidget {
     // final Data dataModel = Injector.get<Data>();
     final Data dataModel = Injector.get<Data>(context: context);
 
-    dataModel.load();
+    // dataModel.load();
 
     return Scaffold(
       appBar: AppBar(
@@ -110,6 +108,8 @@ class HomePage extends StatelessWidget {
 }
 
 class DglSection extends StatelessWidget {
+  final Data dataModel = Injector.get<Data>();
+
   @override
   Widget build(BuildContext context) {
     var display1 =
@@ -117,9 +117,7 @@ class DglSection extends StatelessWidget {
     var title =
         Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w700);
 
-    final Data dataModel = Injector.get<Data>(context: context);
-
-    // dataModel.load();
+    // final Data dataModel = Injector.get<Data>(context: context);
 
     final entries = dataModel.entries.toList();
 
@@ -136,30 +134,38 @@ class DglSection extends StatelessWidget {
 
     double profitedMoney = gainedMoney - expensedMoney;
 
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Text(
-              "Your balance",
-              style: title,
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return StateBuilder(
+      models: [dataModel],
+      initState: (context, _) {
+        dataModel.load();
+      },
+      builder: (context, _) {
+        return Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              _buildDglColumns(["Expenses", "Gains", "Profit"], display1),
-              _buildDglColumns([
-                "R\$ ${expensedMoney.toStringAsFixed(2)}",
-                "R\$ ${gainedMoney.toStringAsFixed(2)}",
-                "R\$ ${profitedMoney.toStringAsFixed(2)}"
-              ], display1),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
+                child: Text(
+                  "Your balance",
+                  style: title,
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildDglColumns(["Expenses", "Gains", "Profit"], display1),
+                  _buildDglColumns([
+                    "R\$ ${expensedMoney.toStringAsFixed(2)}",
+                    "R\$ ${gainedMoney.toStringAsFixed(2)}",
+                    "R\$ ${profitedMoney.toStringAsFixed(2)}"
+                  ], display1),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -193,6 +199,8 @@ class DglSection extends StatelessWidget {
 }
 
 class LastInputsSection extends StatelessWidget {
+  final Data dataModel = Injector.get<Data>();
+
   @override
   Widget build(BuildContext context) {
     var title =
@@ -201,73 +209,84 @@ class LastInputsSection extends StatelessWidget {
     var subtitle = Theme.of(context).textTheme.subtitle;
     var subhead = Theme.of(context).textTheme.subhead;
 
-    final Data dataModel = Injector.get<Data>(context: context);
+    var _scrollCtrl = ScrollController(
+      initialScrollOffset: dataModel.entries.length * 65.0,
+    );
 
-    // dataModel.load();
+    // final Data dataModel = Injector.get<Data>(context: context);
 
-    return Column(children: [
-      Container(
-        padding: const EdgeInsets.symmetric(vertical: 12.0),
-        child: Text(
-          "Last Inputs",
-          style: title,
-        ),
-      ),
-      Container(
-        height: 195.0,
-        child: ListView.builder(
-          reverse: true,
-          padding: const EdgeInsets.symmetric(horizontal: 6.0),
-          itemCount: dataModel.entries.length,
-          controller: ScrollController(
-            initialScrollOffset: (dataModel.entries.length * 65.0),
+    return StateBuilder(
+      models: [dataModel],
+      initState: (context, _) {
+        dataModel.load();
+      },
+      onRebuildState: (context, _) {
+        _scrollCtrl.jumpTo(dataModel.entries.length * 65.0);
+      },
+      builder: (context, _) {
+        return Column(children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
+            child: Text(
+              "Last Inputs",
+              style: title,
+            ),
           ),
-          itemBuilder: (BuildContext context, int index) {
-            final entry = dataModel.entries[index];
+          Container(
+            height: 195.0,
+            child: ListView.builder(
+              reverse: true,
+              padding: const EdgeInsets.symmetric(horizontal: 6.0),
+              itemCount: dataModel.entries.length,
+              controller: _scrollCtrl,
+              itemBuilder: (BuildContext context, int index) {
+                final entry = dataModel.entries[index];
 
-            dynamic isExpense() {
-              String entryType = "Gain";
-              var entryTextColor = Colors.green;
+                dynamic isExpense() {
+                  String entryType = "Gain";
+                  var entryTextColor = Colors.green;
 
-              if (entry.isExpense) {
-                entryType = "Expense";
-                entryTextColor = Colors.red;
-              }
+                  if (entry.isExpense) {
+                    entryType = "Expense";
+                    entryTextColor = Colors.red;
+                  }
 
-              return ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Text>[
-                    Text(
-                      "$entryType $index",
-                      style: subhead.copyWith(color: entryTextColor),
-                      textAlign: TextAlign.left,
+                  return ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Text>[
+                        Text(
+                          "$entryType $index",
+                          style: subhead.copyWith(color: entryTextColor),
+                          textAlign: TextAlign.left,
+                        ),
+                        Text(
+                          "R\$ ${entry.value.toStringAsFixed(2)}",
+                          style: subhead.copyWith(color: entryTextColor),
+                          textAlign: TextAlign.right,
+                        ),
+                      ],
                     ),
-                    Text(
-                      "R\$ ${entry.value.toStringAsFixed(2)}",
-                      style: subhead.copyWith(color: entryTextColor),
-                      textAlign: TextAlign.right,
+                    subtitle: Text(
+                      entry.category,
+                      style: subtitle.copyWith(color: Colors.black54),
+                      textAlign: TextAlign.start,
                     ),
-                  ],
-                ),
-                subtitle: Text(
-                  entry.category,
-                  style: subtitle.copyWith(color: Colors.black54),
-                  textAlign: TextAlign.start,
-                ),
-              );
-            }
+                  );
+                }
 
-            return Container(
-              height: 65.0,
-              color: Colors.grey[100],
-              child: isExpense(),
-              key: Key(dataModel.entries.indexOf(entry).toString()),
-            );
-          },
-        ),
-      ),
-    ]);
+                return Container(
+                  height: 65.0,
+                  color: Colors.grey[100],
+                  child: isExpense(),
+                  key: Key(dataModel.entries.indexOf(entry).toString()),
+                );
+              },
+            ),
+          ),
+        ]);
+      },
+    );
   }
 }
 
