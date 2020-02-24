@@ -14,14 +14,11 @@ class Data extends StatesRebuilder {
     entries = [];
 
     entries.add(Entry(category: "Job", isExpense: false, value: 1000.95));
-    entries.add(Entry(category: "Education", isExpense: true, value: 300.00));
+    entries.add(Entry(category: "Education", isExpense: true, value: 400.00));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Food", isExpense: true, value: 41.50));
-    entries.add(Entry(category: "Tax", isExpense: true, value: 500.44));
     entries.add(Entry(category: "Job", isExpense: false, value: 500.65));
     // Dummy entries
-
-    load();
   }
 
   Future load() async {
@@ -34,6 +31,7 @@ class Data extends StatesRebuilder {
 
       entries = result;
 
+      // if (hasObservers)
       rebuildStates();
     }
   }
@@ -42,12 +40,14 @@ class Data extends StatesRebuilder {
     var prefs = await SharedPreferences.getInstance();
     await prefs.setString('data', jsonEncode(entries));
 
-    // load();
+    // if (hasObservers)
     rebuildStates();
   }
 }
 
 class App extends StatelessWidget {
+  // final Data dataModel = Injector.get<Data>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -59,6 +59,8 @@ class App extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: Injector(
+        // initState: Data().load,
+        // initState: dataModel.load,
         inject: [Inject(() => Data())],
         builder: (BuildContext context) {
           return HomePage();
@@ -72,7 +74,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final Data dataModel = Injector.get<Data>();
-    final Data dataModel = Injector.get(context: context);
+    final Data dataModel = Injector.get<Data>(context: context);
+
+    dataModel.load();
 
     return Scaffold(
       appBar: AppBar(
@@ -113,9 +117,9 @@ class DglSection extends StatelessWidget {
     var title =
         Theme.of(context).textTheme.title.copyWith(fontWeight: FontWeight.w700);
 
-    final Data dataModel = Injector.get(context: context);
+    final Data dataModel = Injector.get<Data>(context: context);
 
-    dataModel.load();
+    // dataModel.load();
 
     final entries = dataModel.entries.toList();
 
@@ -197,9 +201,9 @@ class LastInputsSection extends StatelessWidget {
     var subtitle = Theme.of(context).textTheme.subtitle;
     var subhead = Theme.of(context).textTheme.subhead;
 
-    final Data dataModel = Injector.get(context: context);
+    final Data dataModel = Injector.get<Data>(context: context);
 
-    dataModel.load();
+    // dataModel.load();
 
     return Column(children: [
       Container(
@@ -291,12 +295,12 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final Data dataModel = Injector.get(context: context);
     // final Data dataModel = Injector.get<Data>();
+    final Data dataModel = Injector.get<Data>(context: context);
 
     final entries = dataModel.entries;
 
-    void addNewEntry(bool entryType) {
+    void addNewEntry(bool entryType) async {
       entries.add(
         Entry(
           isExpense: entryType,
@@ -305,8 +309,9 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
         ),
       );
 
-      dataModel.save();
+      await dataModel.save();
 
+      entryValueCrtl.clear();
       entryValueCrtl.text = "0.00";
 
       Navigator.pop(context);
