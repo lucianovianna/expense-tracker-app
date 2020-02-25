@@ -213,6 +213,11 @@ class LastInputsSection extends StatelessWidget {
       initialScrollOffset: dataModel.entries.length * 65.0,
     );
 
+    void removeEntry(int index) {
+      dataModel.entries.removeAt(index);
+      dataModel.save();
+    }
+
     // final Data dataModel = Injector.get<Data>(context: context);
 
     return StateBuilder(
@@ -252,6 +257,14 @@ class LastInputsSection extends StatelessWidget {
                   }
 
                   return ListTile(
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      alignment: Alignment.topCenter,
+                      tooltip: "Delete entry",
+                      onPressed: () {
+                        removeEntry(index);
+                      },
+                    ),
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Text>[
