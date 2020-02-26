@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
-import 'models/Entry.dart';
+// import 'models/Entry.dart';
 import 'Storage.dart';
 
 class NewEntryScreen extends StatefulWidget {
@@ -12,10 +12,10 @@ class NewEntryScreen extends StatefulWidget {
 class _NewEntryScreenState extends State<NewEntryScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  String dropDownValue = "Job";
+  String entryCategory = "Job";
   void dropDownChange(String val) {
     setState(() {
-      dropDownValue = val;
+      entryCategory = val;
     });
   }
 
@@ -31,18 +31,12 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
     // final Storage storageModel = Injector.get<Storage>();
     final Storage storageModel = Injector.get<Storage>(context: context);
 
-    final entries = storageModel.entries;
-
-    void addNewEntry(bool entryType) async {
-      entries.add(
-        Entry(
-          isExpense: entryType,
-          category: dropDownValue,
-          value: double.parse(entryValueCrtl.text),
-        ),
+    void addNewEntry(bool entryType) {
+      storageModel.add(
+        category: entryCategory,
+        isExpense: entryType,
+        value: double.parse(entryValueCrtl.text),
       );
-
-      await storageModel.save();
 
       entryValueCrtl.clear();
       entryValueCrtl.text = "0.00";
@@ -114,7 +108,7 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                       );
                     }).toList(),
                     onChanged: dropDownChange,
-                    value: dropDownValue,
+                    value: entryCategory,
                   ),
                 ),
                 // Add Entry Buttons

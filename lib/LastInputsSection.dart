@@ -18,11 +18,6 @@ class LastInputsSection extends StatelessWidget {
       initialScrollOffset: storageModel.entries.length * 65.0,
     );
 
-    void removeEntry(int index) {
-      storageModel.entries.removeAt(index);
-      storageModel.save();
-    }
-
     // final Storage storageModel = Injector.get<Storage>(context: context);
 
     return StateBuilder(
@@ -67,7 +62,7 @@ class LastInputsSection extends StatelessWidget {
                       alignment: Alignment.topCenter,
                       tooltip: "Delete entry",
                       onPressed: () {
-                        removeEntry(index);
+                        storageModel.remove(index);
                       },
                     ),
                     title: Row(

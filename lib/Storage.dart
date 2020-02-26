@@ -10,11 +10,10 @@ class Storage extends StatesRebuilder {
   Storage() {
     entries = [];
 
-    entries.add(Entry(category: "Job", isExpense: false, value: 1000.95));
+    entries.add(Entry(category: "Job", isExpense: false, value: 1500.95));
     entries.add(Entry(category: "Education", isExpense: true, value: 400.00));
     entries.add(Entry(category: "Tax", isExpense: true, value: 500.0));
     entries.add(Entry(category: "Food", isExpense: true, value: 41.50));
-    entries.add(Entry(category: "Job", isExpense: false, value: 500.65));
     // Dummy entries
   }
 
@@ -37,5 +36,23 @@ class Storage extends StatesRebuilder {
     await prefs.setString('data', jsonEncode(entries));
 
     rebuildStates();
+  }
+
+  add({String category, bool isExpense, double value}) {
+    entries.add(
+      Entry(
+        category: category,
+        isExpense: isExpense,
+        value: value,
+      ),
+    );
+
+    save();
+  }
+
+  remove(int index) {
+    entries.removeAt(index);
+
+    save();
   }
 }
