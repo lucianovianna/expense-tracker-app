@@ -18,15 +18,45 @@ class LastInputsSection extends StatelessWidget {
       initialScrollOffset: storageModel.entries.length * 65.0,
     );
 
-    // final Storage storageModel = Injector.get<Storage>(context: context);
+    Future<void> _confirmDialog(context, int index) async {
+      return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Confirmation"),
+            content: Text("Are you sure about deleting this entry?"),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  storageModel.remove(index);
+                  Navigator.of(context).pop();
+                },
+                child: Text("Delete"),
+              ),
+            ],
+          );
+        },
+      );
+    }
 
     return StateBuilder(
       models: [storageModel],
       initState: (context, _) {
         storageModel.load();
       },
-      onRebuildState: (context, _) {
-        _scrollCtrl.jumpTo(storageModel.entries.length * 65.0);
+      afterRebuild: (context, _) {
+        _scrollCtrl.animateTo(
+          _scrollCtrl.position.maxScrollExtent,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 400),
+        );
       },
       builder: (context, _) {
         return Column(children: [
@@ -39,6 +69,7 @@ class LastInputsSection extends StatelessWidget {
           ),
           Container(
             height: 195.0,
+            color: Colors.grey[100],
             child: ListView.builder(
               reverse: true,
               padding: const EdgeInsets.symmetric(horizontal: 6.0),
@@ -62,7 +93,8 @@ class LastInputsSection extends StatelessWidget {
                       alignment: Alignment.topCenter,
                       tooltip: "Delete entry",
                       onPressed: () {
-                        storageModel.remove(index);
+                        // storageModel.remove(index);
+                        _confirmDialog(context, index);
                       },
                     ),
                     title: Row(

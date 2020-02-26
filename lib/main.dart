@@ -16,7 +16,7 @@ class App extends StatelessWidget {
       title: 'Expense Tracker',
       theme: ThemeData(
         primaryColor: Colors.grey[350],
-        primarySwatch: Colors.grey,
+        primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
       ),
       debugShowCheckedModeBanner: false,
@@ -50,7 +50,8 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.grey[350],
         onPressed: () {
           Navigator.push(
             context,
