@@ -103,20 +103,25 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Enter the Category Name"),
-          content: TextFormField(
-            controller: addCategoryCrtl,
-            style: TextStyle(
-              color: Colors.black87,
-              fontSize: 14.0,
+          content: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextFormField(
+              maxLines: 1,
+              autofocus: true,
+              autovalidate: true,
+              controller: addCategoryCrtl,
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 20.0,
+              ),
+              keyboardType: TextInputType.text,
+              validator: (value) {
+                if (value.length < 2) {
+                  return 'Must have at least 2 characters';
+                }
+                return null;
+              },
             ),
-            decoration: InputDecoration(),
-            keyboardType: TextInputType.text,
-            validator: (value) {
-              if (value.length < 2) {
-                return 'Must have at least 2 characters';
-              }
-              return null;
-            },
           ),
           actions: <Widget>[
             FlatButton(
@@ -127,7 +132,10 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
             ),
             FlatButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                if (addCategoryCrtl.text.length > 2) {
+                  addNewCategory(addCategoryCrtl.text);
+                  Navigator.of(context).pop();
+                }
               },
               child: Text("Confirm"),
             ),
@@ -146,7 +154,7 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
       storageModel.add(
         category: entryCategory,
         isExpense: entryType,
-        value: double.parse(entryValueCrtl.text),
+        value: double.parse(entryValueCrtl.text.trim()),
       );
 
       entryValueCrtl.clear();
@@ -178,6 +186,7 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                       color: Colors.black87,
                       fontSize: 20.0,
                     ),
+                    enableInteractiveSelection: true,
                     decoration: InputDecoration(
                       prefixText: "R\$ \t",
                     ),
@@ -185,6 +194,10 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                     validator: (value) {
                       if (value.isEmpty) {
                         return 'Please enter the value';
+                      } else if (value.contains('-') ||
+                          value.contains(',') ||
+                          double.tryParse(value) == null) {
+                        return 'Invalid format';
                       } else if (double.parse(value) <= 0) {
                         return 'Value must be positive';
                       }
@@ -194,8 +207,11 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                 ),
                 // Category Selection Form
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Container(
+                      width: 305,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 6.0,
                         vertical: 30.0,
@@ -216,13 +232,17 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                         value: entryCategory,
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.add_box),
-                      alignment: Alignment.center,
-                      tooltip: "Add new category",
-                      onPressed: () {
-                        _addCategoryDialog(context);
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(top: 60),
+                      child: IconButton(
+                        icon: Icon(Icons.playlist_add),
+                        iconSize: 28,
+                        alignment: Alignment.centerRight,
+                        tooltip: "Add new category",
+                        onPressed: () {
+                          _addCategoryDialog(context);
+                        },
+                      ),
                     ),
                   ],
                 ),
