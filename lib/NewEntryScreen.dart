@@ -1,8 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:states_rebuilder/states_rebuilder.dart';
 
 // import 'models/Entry.dart';
 import 'Storage.dart';
+
+class UserCategories extends StatesRebuilder {
+  var categoriesArray = new List<String>();
+
+  UserCategories() {
+    categoriesArray = [
+      "Job",
+      "Gift",
+      "Payments",
+      "Tax",
+      "Food",
+      "Education",
+      "Transport",
+      "Others",
+    ];
+  }
+
+  Future load() async {
+    var prefs = await SharedPreferences.getInstance();
+    final newCategoriesArray = prefs.getStringList("categories") ?? 0;
+
+    categoriesArray = newCategoriesArray;
+  }
+
+  save(List<String> categories) async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('categories', categories);
+  }
+}
 
 class NewEntryScreen extends StatefulWidget {
   @override
@@ -10,6 +40,43 @@ class NewEntryScreen extends StatefulWidget {
 }
 
 class _NewEntryScreenState extends State<NewEntryScreen> {
+  var categoriesArray = new List<String>();
+
+  // Init State
+  _NewEntryScreenState() {
+    entryValueCrtl.text = "0.00";
+
+    // Default Categories
+    categoriesArray = [
+      "Job",
+      "Gift",
+      "Payments",
+      "Tax",
+      "Food",
+      "Education",
+      "Transport",
+      "Others",
+    ];
+
+    loadUserCategories();
+  }
+
+  Future loadUserCategories() async {
+    var prefs = await SharedPreferences.getInstance();
+    final newCategoriesArray = prefs.getStringList("categories");
+
+    if (newCategoriesArray != null) {
+      setState(() {
+        categoriesArray = newCategoriesArray;
+      });
+    }
+  }
+
+  saveUserCategories(List<String> categories) async {
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('categories', categories);
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   String entryCategory = "Job";
@@ -19,11 +86,55 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
     });
   }
 
-  final entryValueCrtl = TextEditingController();
+  void addNewCategory(String cat) {
+    setState(() {
+      categoriesArray.add(cat);
+      saveUserCategories(categoriesArray);
+    });
+  }
 
-  // Init State
-  _NewEntryScreenState() {
-    entryValueCrtl.text = "0.00";
+  final entryValueCrtl = TextEditingController();
+  final addCategoryCrtl = TextEditingController();
+
+  Future<void> _addCategoryDialog(context) async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Enter the Category Name"),
+          content: TextFormField(
+            controller: addCategoryCrtl,
+            style: TextStyle(
+              color: Colors.black87,
+              fontSize: 14.0,
+            ),
+            decoration: InputDecoration(),
+            keyboardType: TextInputType.text,
+            validator: (value) {
+              if (value.length < 2) {
+                return 'Must have at least 2 characters';
+              }
+              return null;
+            },
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Confirm"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -82,34 +193,38 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                   ),
                 ),
                 // Category Selection Form
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6.0,
-                    vertical: 30.0,
-                  ),
-                  child: DropdownButtonFormField(
-                    decoration: InputDecoration(
-                      labelText: "Select a category",
-                      isDense: true,
+                Row(
+                  children: <Widget>[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6.0,
+                        vertical: 30.0,
+                      ),
+                      child: DropdownButtonFormField(
+                        decoration: InputDecoration(
+                          labelText: "Select a category",
+                          isDense: true,
+                        ),
+                        items: categoriesArray
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            child: Text(value),
+                            value: value,
+                          );
+                        }).toList(),
+                        onChanged: dropDownChange,
+                        value: entryCategory,
+                      ),
                     ),
-                    items: <String>[
-                      "Job",
-                      "Gift",
-                      "Payments",
-                      "Tax",
-                      "Food",
-                      "Education",
-                      "Transport",
-                      "Other",
-                    ].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        child: Text(value),
-                        value: value,
-                      );
-                    }).toList(),
-                    onChanged: dropDownChange,
-                    value: entryCategory,
-                  ),
+                    IconButton(
+                      icon: Icon(Icons.add_box),
+                      alignment: Alignment.center,
+                      tooltip: "Add new category",
+                      onPressed: () {
+                        _addCategoryDialog(context);
+                      },
+                    ),
+                  ],
                 ),
                 // Add Entry Buttons
                 Center(
