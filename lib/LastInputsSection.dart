@@ -129,6 +129,7 @@ class LastInputsSection extends StatelessWidget {
               },
             ),
           ),
+          Container(height: 30.0)
         ]);
       },
     );

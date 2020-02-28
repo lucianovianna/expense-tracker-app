@@ -173,12 +173,17 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                // Flexible(
+                //   child: FractionallySizedBox(heightFactor: 0.1),
+                // ), // trying a relative padding
+
                 // Value Input Form
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6.0,
-                    vertical: 30.0,
+                    // vertical: 30.0,
                   ),
                   child: TextFormField(
                     controller: entryValueCrtl,
@@ -205,39 +210,51 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                     },
                   ),
                 ),
-                // Category Selection Form
+
+                // Flexible(
+                //   child: FractionallySizedBox(heightFactor: 0.1),
+                // ), // trying a relative padding
+
+                // Category Form
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Container(
-                      width: 305,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6.0,
-                        vertical: 30.0,
-                      ),
-                      child: DropdownButtonFormField(
-                        decoration: InputDecoration(
-                          labelText: "Select a category",
-                          isDense: true,
+                    // Category Selection
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6.0,
+                          // vertical: 30.0,
                         ),
-                        items: categoriesArray
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            child: Text(value),
-                            value: value,
-                          );
-                        }).toList(),
-                        onChanged: dropDownChange,
-                        value: entryCategory,
+                        child: FractionallySizedBox(
+                          widthFactor: 1,
+                          child: DropdownButtonFormField(
+                            decoration: InputDecoration(
+                              labelText: "Select a category",
+                              isDense: true,
+                            ),
+                            items: categoriesArray
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                child: Text(value),
+                                value: value,
+                              );
+                            }).toList(),
+                            onChanged: dropDownChange,
+                            value: entryCategory,
+                          ),
+                        ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 60),
+                    // Add new category
+                    Container(
+                      // padding: const EdgeInsets.only(top: 60),
                       child: IconButton(
                         icon: Icon(Icons.playlist_add),
                         iconSize: 28,
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.bottomRight,
                         tooltip: "Add new category",
                         onPressed: () {
                           _addCategoryDialog(context);
@@ -246,6 +263,7 @@ class _NewEntryScreenState extends State<NewEntryScreen> {
                     ),
                   ],
                 ),
+
                 // Add Entry Buttons
                 Center(
                   child: Column(

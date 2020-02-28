@@ -42,10 +42,11 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text("Expense Tracker"),
       ),
-      body: Column(
+      body: ListView(
         children: [
           BalanceSection(),
-          Expanded(child: LastInputsSection()),
+          // Expanded(child: LastInputsSection()),
+          LastInputsSection(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
