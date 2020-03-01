@@ -33,7 +33,7 @@ class BalanceSection extends StatelessWidget {
     return StateBuilder(
       models: [storageModel],
       initState: (context, _) {
-        storageModel.load();
+        storageModel.loadEntries();
       },
       builder: (context, _) {
         return Center(

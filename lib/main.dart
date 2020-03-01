@@ -45,7 +45,6 @@ class HomePage extends StatelessWidget {
       body: ListView(
         children: [
           BalanceSection(),
-          // Expanded(child: LastInputsSection()),
           LastInputsSection(),
         ],
       ),

@@ -35,7 +35,7 @@ class LastInputsSection extends StatelessWidget {
               ),
               FlatButton(
                 onPressed: () {
-                  storageModel.remove(index);
+                  storageModel.removeEntry(index);
                   Navigator.of(context).pop();
                 },
                 child: Text("Delete"),
@@ -49,7 +49,7 @@ class LastInputsSection extends StatelessWidget {
     return StateBuilder(
       models: [storageModel],
       initState: (context, _) {
-        storageModel.load();
+        storageModel.loadEntries();
       },
       afterRebuild: (context, _) {
         _scrollCtrl.animateTo(
